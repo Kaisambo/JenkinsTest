@@ -58,7 +58,7 @@ pipeline {
 
         stage('Finish') {
             steps {
-                echo '✅ Приложение успешно развернуто на Open Server Panel'
+                echo '✅ sucsess'
             }
         }
     }
