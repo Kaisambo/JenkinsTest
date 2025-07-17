@@ -28,10 +28,10 @@ pipeline {
             steps {
                 bat """
                     @echo off
-                    REM Удаляем старый JAR, если он есть
+                    REM delete old jar
                     if exist \"${LOCAL_PATH}\\\\${JAR_NAME}\" del \"${LOCAL_PATH}\\\\${JAR_NAME}\"
 
-                    REM Копируем новый JAR
+                    REM copy new jar
                     copy \"target\\\\${JAR_NAME}\" \"${LOCAL_PATH}\"
                 """
             }
@@ -43,14 +43,14 @@ pipeline {
                     @echo off
                     cd /d \"${LOCAL_PATH}\"
 
-                    REM Останавливаем предыдущий процесс, если он запущен
+                    REM Оstop pred process
                     tasklist | findstr :8080 >nul && (
                         for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do (
                             taskkill /PID %%a /F
                         )
                     )
 
-                    REM Запускаем приложение в фоне
+                    REM start app
                     start javaw -jar \"${JAR_NAME}\"
                 """
             }
