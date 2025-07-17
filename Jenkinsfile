@@ -65,7 +65,7 @@ pipeline {
                          git add .
                          git commit -m "Deploy from Jenkins"
                          git push origin HEAD:main --force
-                         exit 0
+
                      """
                  }
              }
