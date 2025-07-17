@@ -54,7 +54,7 @@ pipeline {
                     )
 
                     REM Start new JAR application in background
-                    start javac -jar \"${JAR_NAME}\"
+                    start javaw -jar \"${JAR_NAME}\"
                 """
             }
         }
