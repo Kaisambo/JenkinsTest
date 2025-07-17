@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        RENDER_SERVICE_NAME = 'your-render-service-name' // замени на имя своего сервиса
+        RENDER_SERVICE_NAME = 'JenkinsTest' // замени на имя своего сервиса
         RENDER_API_KEY = credentials('render-api-key') // ID креда в Jenkins
-        GIT_REPO_URL = 'https://github.com/ ваше_имя/ваш_репо.git'
+        GIT_REPO_URL = 'https://github.com/Kaisambo/JenkinsTest.git'
     }
 
     stages {
@@ -31,7 +31,7 @@ pipeline {
                         cp pom.xml build-output
                         cd build-output
                         git init
-                        git remote add origin https://github.com/ ваше_имя/ваш_репо.git
+                        git remote add origin https://github.com/Kaisambo/JenkinsTest.git
                         sh '''
                             echo "web: java -jar target/PP3Task2-0.0.1-SNAPSHOT.jar" > Procfile
                         '''
@@ -62,3 +62,5 @@ pipeline {
         }
     }
 }
+
+"rnd_QUIad422BGAdmqgvWI4C54uvLDQX - рендер апи ключ"
