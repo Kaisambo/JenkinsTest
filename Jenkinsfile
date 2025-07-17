@@ -73,7 +73,6 @@ pipeline {
                     }
                 }
             }
-        }
 
         stage('Finish') {
             steps {
