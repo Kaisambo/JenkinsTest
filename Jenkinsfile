@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        RENDER_SERVICE_NAME = 'JenkinsTest' // замени на имя своего сервиса
-        RENDER_API_KEY = credentials('render_api_key')
-        GIT_REPO_URL = 'https://github.com/Kaisambo/JenkinsTest.git'
+        RENDER_SERVICE_NAME = 'jenkinsTest' // имя сервиса на Render
+        RENDER_CRED_ID = 'render_api_key' // ID креда в Jenkins
     }
 
     stages {
@@ -20,63 +19,69 @@ pipeline {
             }
         }
 
-        stage('Debug') {
+        stage('Prepare for Render') {
             steps {
                 script {
-                    echo "RENDER_API_KEY: ${RENDER_API_KEY}"
-                    echo "RENDER_SERVICE_NAME: ${RENDER_SERVICE_NAME}"
-                    echo "Git remote URL: https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git"
+                    echo "Создаем временную папку render-deploy"
+                    bat """
+                        @echo on
+
+                        REM Удаляем старую папку, если есть
+                        if exist \"render-deploy\" rmdir /s /q \"render-deploy\"
+
+                        REM Создаем новую
+                        mkdir render-deploy
+
+                        REM Копируем .jar
+                        copy \"target\\PP3Task2-0.0.1-SNAPSHOT.jar\" \"render-deploy\\app.jar\"
+
+                        REM Создаем Procfile
+                        echo web: java -jar app.jar > \"render-deploy\\Procfile\"
+                    """
                 }
             }
         }
 
-      stage('Prepare for Render') {
-          steps {
-              script {
-                  echo "Создаем временную папку для деплоя"
-                  bat """
-                      @echo on
-                      REM Создаем папку, если её нет
-                      if not exist \"render-deploy\" mkdir render-deploy
+        stage('Deploy to Render') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: RENDER_CRED_ID,
+                    usernameVariable: 'RENDER_USER',
+                    passwordVariable: 'RENDER_API_KEY'
+                )]) {
+                    script {
+                        echo "Пушим на Render: ${RENDER_SERVICE_NAME}"
 
-                      REM Удаляем старые файлы
-                      if exist \"render-deploy\\app.jar\" del \"render-deploy\\app.jar\"
+                        bat """
+                            @echo on
+                            cd /d \"render-deploy\"
 
-                      REM Копируем JAR файл
-                      copy \"target\\PP3Task2-0.0.1-SNAPSHOT.jar\" \"render-deploy\\app.jar\"
-                  """
-              }
-          }
-      }
+                            REM Инициализируем Git
+                            git init
+                            git config --local user.email \"jenkins@example.com\"
+                            git config --local user.name \"Jenkins\"
 
-     stage('Deploy to Render') {
-         steps {
-             withCredentials([usernamePassword(
-                 credentialsId: 'render_api_key',
-                 passwordVariable: 'RENDER_API_KEY',
-                 usernameVariable: 'RENDER_USER'
-             )]) {
-                 script {
-                     echo "Формируем URL для Render"
+                            REM Удаляем старый remote
+                            git remote remove origin || echo Origin not found
 
-                     bat """
-                         cd /d render-deploy
-                         git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
-                         git add .
-                         git commit -m "Deploy from Jenkins"
-                         git push origin HEAD:main
+                            REM Добавляем новый remote
+                            git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
 
-                     """
-                 }
-             }
-         }
-     }
+                            REM Добавляем файлы и делаем push
+                            git add .
+                            git commit -m \"Deploy .jar to Render\"
+                            git push origin HEAD:main --force
+                        """
+                    }
+                }
+            }
+        }
 
         stage('Finish') {
             steps {
-                echo "Deployed on: https://${RENDER_SERVICE_NAME}.onrender.com"
+                echo "✅ Приложение задеплоено на Render"
+                echo "Открой: https://${RENDER_SERVICE_NAME}.onrender.com"
             }
         }
     }
 }
-
