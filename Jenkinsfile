@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         // Путь к папке проекта на Open Server
-        LOCAL_PATH = 'C:/OpenServer/domains/my-spring-app'
+        LOCAL_PATH = 'C:/OpenServer/domains/jenkinsproj'
         // Имя JAR файла (должно совпадать с именем в pom.xml)
-        JAR_NAME = 'my-spring-app.jar'
+        JAR_NAME = 'PP3Task2-0.0.1-SNAPSHOT.jar'
     }
 
     stages {
