@@ -22,16 +22,26 @@ pipeline {
             }
         }
 
+        echo "LOCAL_PATH = ${LOCAL_PATH}"
+        echo "JAR_NAME = ${JAR_NAME}"
+
         // 3. Copy JAR file to Open Server directory
         stage('Copy to Open Server') {
             steps {
                 bat """
-                    @echo off
-                    REM Delete old JAR file if it exists
-                    if exist \"${LOCAL_PATH}\\\\${JAR_NAME}\" del /Q \"${LOCAL_PATH}\\\\${JAR_NAME}\"
+                    @echo on
+                    cd /d \"${LOCAL_PATH}\"
 
-                    REM Copy new JAR file
-                    copy target\\\\${JAR_NAME} \"${LOCAL_PATH}\"
+                    REM Остановка старого процесса
+                    tasklist | findstr :8080 >nul && (
+                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do (
+                            echo Killing process with PID: %%a
+                            taskkill /PID %%a /F || echo Failed to kill process
+                        )
+                    )
+
+                    REM Запуск приложения
+                    start javaw -jar \"${JAR_NAME}\" && echo Application started successfully || echo Failed to start application
                 """
             }
         }
