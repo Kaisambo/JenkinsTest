@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         RENDER_SERVICE_NAME = 'JenkinsTest' // замени на имя своего сервиса
-        RENDER_API_KEY = credentials('render-api-ley') //
+        RENDER_API_KEY = credentials('render-api-key') //
         GIT_REPO_URL = 'https://github.com/Kaisambo/JenkinsTest.git'
     }
 
@@ -63,7 +63,7 @@ pipeline {
 
         stage('Finish') {
             steps {
-                echo "Приложение задеплоено по адресу: https://${RENDER_SERVICE_NAME}.onrender.com"
+                echo "Deployed on: https://${RENDER_SERVICE_NAME}.onrender.com"
             }
         }
     }
