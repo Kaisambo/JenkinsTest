@@ -58,7 +58,7 @@ pipeline {
 
         stage('Finish') {
             steps {
-                echo ' sucsess'
+                echo 'sucsess'
             }
         }
     }
