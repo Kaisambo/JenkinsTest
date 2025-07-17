@@ -67,7 +67,7 @@ pipeline {
                             git remote remove origin || echo Origin not found
 
                             REM Добавляем новый remote
-                            git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
+                             git remote add origin https://%RENDER_API_KEY%@git.render.com/${RENDER_SERVICE_NAME}.git
 
                             REM Добавляем файлы и делаем push
                             git add .
