@@ -64,7 +64,7 @@ pipeline {
                          git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
                          git add .
                          git commit -m "Deploy from Jenkins"
-                         git push origin HEAD:main --force
+                         git push origin HEAD:main
 
                      """
                  }
