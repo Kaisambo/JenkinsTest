@@ -22,8 +22,8 @@ pipeline {
             }
         }
 
-        echo "LOCAL_PATH = ${LOCAL_PATH}"
-        echo "JAR_NAME = ${JAR_NAME}"
+        @echo "LOCAL_PATH = ${LOCAL_PATH}"
+        @echo "JAR_NAME = ${JAR_NAME}"
 
         // 3. Copy JAR file to Open Server directory
         stage('Copy to Open Server') {
