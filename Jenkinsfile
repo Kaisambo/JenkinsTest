@@ -54,7 +54,7 @@ pipeline {
                     )
 
                     REM Start new JAR application in background
-                    start javaw -jar \"${JAR_NAME}\"
+                    start "" javaw -jar "PP3Task2-0.0.1-SNAPSHOT.jar"
                 """
             }
         }
