@@ -53,8 +53,9 @@ pipeline {
                         )
                     )
 
-                    REM Start new JAR application in background
-                    start "" javaw -jar "PP3Task2-0.0.1-SNAPSHOT.jar"
+                    REM Start new JAR application
+                        echo Starting application...
+                        start \"\" javaw -jar \"${JAR_NAME}\" && echo Application started successfully || echo Failed to start application
                 """
             }
         }
