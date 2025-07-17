@@ -22,8 +22,6 @@ pipeline {
             }
         }
 
-
-
         // 3. Copy JAR file to Open Server directory
         stage('Copy to Open Server') {
             steps {
@@ -56,13 +54,15 @@ pipeline {
                     REM Start new JAR application
                         echo Starting application...
                         start \"\" javaw -jar \"${JAR_NAME}\" && echo Application started successfully || echo Failed to start application
+
+                        exit 0
                 """
             }
         }
 
         stage('Finish') {
             steps {
-                echo '✅ Application successfully deployed on Open Server Panel'
+                echo 'Application successfully deployed on Open Server Panel'
             }
         }
     }
