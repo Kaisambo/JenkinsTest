@@ -2,14 +2,12 @@ pipeline {
     agent any
 
     environment {
-        // Path to project folder on Open Server
-        LOCAL_PATH = 'C:/OpenServer/domains/jenkinsproj'
-        // JAR file name (must match name in pom.xml)
-        JAR_NAME = 'PP3Task2-0.0.1-SNAPSHOT.jar'
+        RENDER_SERVICE_NAME = 'your-render-service-name' // замени на имя своего сервиса
+        RENDER_API_KEY = credentials('render-api-key') // ID креда в Jenkins
+        GIT_REPO_URL = 'https://github.com/ ваше_имя/ваш_репо.git'
     }
 
     stages {
-        // 1. Get code from GitHub
         stage('Checkout') {
             steps {
                 checkout scm
@@ -22,47 +20,44 @@ pipeline {
             }
         }
 
-        // 3. Copy JAR file to Open Server directory
-        stage('Copy to Open Server') {
+        stage('Prepare for Render') {
             steps {
-               bat """
-                   @echo on
-
-                   REM Удаление старого JAR файла
-                   if exist \"${LOCAL_PATH}\\\\${JAR_NAME}\" del /Q \"${LOCAL_PATH}\\\\${JAR_NAME}\"
-
-                   REM Копирование нового JAR
-                   copy \"target\\\\${JAR_NAME}\" \"${LOCAL_PATH}\"
-               """
+                script {
+                    echo "Создаем архив проекта"
+                    sh '''
+                        mkdir -p build-output
+                        cp target/*.jar build-output/app.jar
+                        cp Procfile build-output || echo "Procfile не найден"
+                        cp pom.xml build-output
+                        cd build-output
+                        git init
+                        git remote add origin https://github.com/ ваше_имя/ваш_репо.git
+                        sh '''
+                            echo "web: java -jar target/PP3Task2-0.0.1-SNAPSHOT.jar" > Procfile
+                        '''
+                        git add .
+                        git commit -m "Deploying from Jenkins"
+                    '''
+                }
             }
         }
 
-        stage('Run Application') {
+        stage('Deploy to Render') {
             steps {
-                bat """
-                    @echo on
-                    cd /d \"${LOCAL_PATH}\"
-
-                    REM Stop previous process if running
-                    tasklist | findstr :8080 >nul && (
-                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do (
-                            echo Killing process with PID: %%a
-                            taskkill /PID %%a /F
-                        )
-                    )
-
-                    REM Start new JAR application
-                        echo Starting application...
-                        start \"\" javaw -jar \"${JAR_NAME}\" > app.log 2>&1 && echo Application started successfully || echo Failed to start application
-
-                        exit 0
-                """
+                script {
+                    echo "Push на Render через Git"
+                    sh '''
+                        cd build-output
+                        git remote set-url origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
+                        git push origin HEAD:main --force
+                    '''
+                }
             }
         }
 
         stage('Finish') {
             steps {
-                echo 'Application successfully deployed on Open Server Panel'
+                echo "Приложение задеплоено по адресу: https://${RENDER_SERVICE_NAME}.onrender.com"
             }
         }
     }
