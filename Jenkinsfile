@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         RENDER_SERVICE_NAME = 'JenkinsTest' // замени на имя своего сервиса
-        RENDER_API_KEY = "rnd_LrKt6muvuDsDsiByd2dHvhnDIth1" //
+        RENDER_API_KEY = credentials('render_api_key')
         GIT_REPO_URL = 'https://github.com/Kaisambo/JenkinsTest.git'
     }
 
