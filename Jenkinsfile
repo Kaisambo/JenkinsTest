@@ -49,27 +49,27 @@ pipeline {
           }
       }
 
-      stage('Deploy to Render') {
-          steps {
-              script {
-              def apiKey = env.RENDER_API_KEY
-              def serviceName = env.RENDER_SERVICE_NAME
-                  echo "Инициализируем временный Git-репозиторий и пушим на Render"
-                  bat '''
-                      @echo on
-                      cd /d \"render-deploy\"
+     stage('Deploy to Render') {
+         steps {
+             withCredentials([usernamePassword(
+                 credentialsId: 'render-api-key',
+                 passwordVariable: 'RENDER_API_KEY',
+                 usernameVariable: 'RENDER_USER'
+             )]) {
+                 script {
+                     echo "Формируем URL для Render"
 
-                      REM Инициализируем git
-
-                      REM Устанавливаем удалённый репозиторий
-                      git remote add origin https://$RENDER_API_KEY_USR:$RENDER_API_KEY_PSW@git.render.com/${RENDER_SERVICE_NAME}.git
-                      git add .
-                      git commit -m \"Deploy from Jenkins\"
-                      git push origin HEAD:main --force
-                  '''
-              }
-          }
-      }
+                     bat """
+                         cd /d render-deploy
+                         git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
+                         git add .
+                         git commit -m "Deploy from Jenkins"
+                         git push origin HEAD:main --force
+                     """
+                 }
+             }
+         }
+     }
 
         stage('Finish') {
             steps {
