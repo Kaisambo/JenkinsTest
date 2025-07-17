@@ -22,14 +22,14 @@ pipeline {
             }
         }
 
-        @echo "LOCAL_PATH = ${LOCAL_PATH}"
-        @echo "JAR_NAME = ${JAR_NAME}"
+
 
         // 3. Copy JAR file to Open Server directory
         stage('Copy to Open Server') {
             steps {
                bat """
-                   @echo off
+                   @echo on
+
                    REM Удаление старого JAR файла
                    if exist \"${LOCAL_PATH}\\\\${JAR_NAME}\" del /Q \"${LOCAL_PATH}\\\\${JAR_NAME}\"
 
@@ -42,7 +42,7 @@ pipeline {
         stage('Run Application') {
             steps {
                 bat """
-                    @echo off
+                    @echo on
                     cd /d \"${LOCAL_PATH}\"
 
                     REM Stop previous process if running
