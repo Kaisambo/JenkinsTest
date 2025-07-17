@@ -48,10 +48,8 @@ pipeline {
                       cd /d \"render-deploy\"
 
                       REM Инициализируем git
-                      git init
-                      git config --local user.email \"jenkins@example.com\"
-                      git config --local user.name \"Jenkins\"
 
+                      REM Устанавливаем удалённый репозиторий
                       git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
                       git add .
                       git commit -m \"Deploy from Jenkins\"
