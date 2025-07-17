@@ -62,7 +62,7 @@ pipeline {
                       REM Инициализируем git
 
                       REM Устанавливаем удалённый репозиторий
-                      git remote add origin https://${apiKey}@git.render.com/${serviceName}.git
+                      git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
                       git add .
                       git commit -m \"Deploy from Jenkins\"
                       git push origin HEAD:main --force
