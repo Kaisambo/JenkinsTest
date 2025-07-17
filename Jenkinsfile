@@ -46,11 +46,7 @@ pipeline {
 
         stage('Deploy to Render') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: RENDER_CRED_ID,
-                    usernameVariable: 'RENDER_USER',
-                    passwordVariable: 'RENDER_API_KEY'
-                )]) {
+                {
                     script {
                         echo "Пушим на Render: ${RENDER_SERVICE_NAME}"
 
@@ -67,7 +63,7 @@ pipeline {
                             git remote remove origin || echo Origin not found
 
                             REM Добавляем новый remote
-                             git remote add origin https://%RENDER_API_KEY%@git.render.com/${RENDER_SERVICE_NAME}.git
+                             git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
 
                             REM Добавляем файлы и делаем push
                             git add .
