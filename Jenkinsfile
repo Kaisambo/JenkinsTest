@@ -37,7 +37,6 @@ pipeline {
             }
         }
 
-        // 4. Остановка и запуск приложения
         stage('Run Application') {
             steps {
                 bat """
