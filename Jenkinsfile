@@ -4,6 +4,7 @@ pipeline {
     environment {
         RENDER_SERVICE_NAME = 'jenkinsTest' // имя сервиса на Render
         RENDER_CRED_ID = 'render_api_key' // ID креда в Jenkins
+        RENDER_API_KEY = credentialsId('render_api_key')
     }
 
     stages {
@@ -41,6 +42,7 @@ pipeline {
                 }
             }
         }
+
 
         stage('Deploy to Render') {
             steps {
