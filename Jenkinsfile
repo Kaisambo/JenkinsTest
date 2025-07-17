@@ -45,7 +45,7 @@ pipeline {
 
 
         stage('Deploy to Render') {
-            steps {
+            steps
                 {
                     script {
                         echo "Пушим на Render: ${RENDER_SERVICE_NAME}"
