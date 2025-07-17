@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     echo "Создаем архив проекта"
-                    sh '''
+                    bat '''
                         mkdir -p build-output
                         cp target/*.jar build-output/app.jar
                         cp Procfile build-output || echo "Procfile не найден"
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 script {
                     echo "Push на Render через Git"
-                    sh '''
+                    bat '''
                         cd build-output
                         git remote set-url origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
                         git push origin HEAD:main --force
@@ -63,4 +63,3 @@ pipeline {
     }
 }
 
-"rnd_QUIad422BGAdmqgvWI4C54uvLDQX - рендер апи ключ"
