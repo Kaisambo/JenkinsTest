@@ -52,7 +52,7 @@ pipeline {
      stage('Deploy to Render') {
          steps {
              withCredentials([usernamePassword(
-                 credentialsId: 'render-api-key',
+                 credentialsId: 'render_api_key',
                  passwordVariable: 'RENDER_API_KEY',
                  usernameVariable: 'RENDER_USER'
              )]) {
