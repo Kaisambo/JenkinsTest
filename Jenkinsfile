@@ -53,7 +53,7 @@ pipeline {
 
                     REM Start new JAR application
                         echo Starting application...
-                        start \"\" javaw -jar \"${JAR_NAME}\" && echo Application started successfully || echo Failed to start application
+                        start \"\" javaw -jar \"${JAR_NAME}\" > app.log 2>&1 && echo Application started successfully || echo Failed to start application
 
                         exit 0
                 """
