@@ -20,40 +20,46 @@ pipeline {
             }
         }
 
-        stage('Prepare for Render') {
-            steps {
-                script {
-                    echo "Создаем архив проекта"
-                    bat '''
-                        mkdir -p build-output
-                        cp target/*.jar build-output/app.jar
-                        cp Procfile build-output || echo "Procfile не найден"
-                        cp pom.xml build-output
-                        cd build-output
-                        git init
-                        git remote add origin https://github.com/Kaisambo/JenkinsTest.git
-                        sh '''
-                            echo "web: java -jar target/PP3Task2-0.0.1-SNAPSHOT.jar" > Procfile
-                        '''
-                        git add .
-                        git commit -m "Deploying from Jenkins"
-                    '''
-                }
-            }
-        }
+      stage('Prepare for Render') {
+          steps {
+              script {
+                  echo "Создаем временную папку для деплоя"
+                  bat """
+                      @echo on
+                      REM Создаем папку, если её нет
+                      if not exist \"render-deploy\" mkdir render-deploy
 
-        stage('Deploy to Render') {
-            steps {
-                script {
-                    echo "Push на Render через Git"
-                    bat '''
-                        cd build-output
-                        git remote set-url origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
-                        git push origin HEAD:main --force
-                    '''
-                }
-            }
-        }
+                      REM Удаляем старые файлы
+                      if exist \"render-deploy\\app.jar\" del \"render-deploy\\app.jar\"
+
+                      REM Копируем JAR файл
+                      copy \"target\\PP3Task2-0.0.1-SNAPSHOT.jar\" \"render-deploy\\app.jar\"
+                  """
+              }
+          }
+      }
+
+      stage('Deploy to Render') {
+          steps {
+              script {
+                  echo "Инициализируем временный Git-репозиторий и пушим на Render"
+                  bat """
+                      @echo on
+                      cd /d \"render-deploy\"
+
+                      REM Инициализируем git
+                      git init
+                      git config --local user.email \"jenkins@example.com\"
+                      git config --local user.name \"Jenkins\"
+
+                      git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
+                      git add .
+                      git commit -m \"Deploy from Jenkins\"
+                      git push origin HEAD:main --force
+                  """
+              }
+          }
+      }
 
         stage('Finish') {
             steps {
