@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         RENDER_SERVICE_NAME = 'JenkinsTest' // замени на имя своего сервиса
-        RENDER_API_KEY = credentials('render_api_key') //
+        RENDER_API_KEY = "rnd_LrKt6muvuDsDsiByd2dHvhnDIth1" //
         GIT_REPO_URL = 'https://github.com/Kaisambo/JenkinsTest.git'
     }
 
@@ -17,6 +17,16 @@ pipeline {
         stage('Build') {
             steps {
                 bat 'mvn clean package'
+            }
+        }
+
+        stage('Debug') {
+            steps {
+                script {
+                    echo "RENDER_API_KEY: ${RENDER_API_KEY}"
+                    echo "RENDER_SERVICE_NAME: ${RENDER_SERVICE_NAME}"
+                    echo "Git remote URL: https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git"
+                }
             }
         }
 
