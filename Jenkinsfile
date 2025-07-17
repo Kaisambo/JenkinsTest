@@ -19,7 +19,7 @@ pipeline {
         // 2. Сборка проекта с помощью Maven
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                bat 'mvn clean package'
             }
         }
 
