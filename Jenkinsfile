@@ -42,6 +42,8 @@ pipeline {
       stage('Deploy to Render') {
           steps {
               script {
+              def apiKey = env.RENDER_API_KEY
+              def serviceName = env.RENDER_SERVICE_NAME
                   echo "Инициализируем временный Git-репозиторий и пушим на Render"
                   bat """
                       @echo on
@@ -50,7 +52,7 @@ pipeline {
                       REM Инициализируем git
 
                       REM Устанавливаем удалённый репозиторий
-                      git remote add origin https://${RENDER_API_KEY}@git.render.com/${RENDER_SERVICE_NAME}.git
+                      git remote add origin https://${apiKey}@git.render.com/${serviceName}.git
                       git add .
                       git commit -m \"Deploy from Jenkins\"
                       git push origin HEAD:main --force
