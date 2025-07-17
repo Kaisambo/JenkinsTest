@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         RENDER_SERVICE_NAME = 'jenkinsTest' // имя сервиса на Render
-        RENDER_CRED_ID = 'render_api_key'  // ID креда в Jenkins
+        RENDER_CRED_ID = 'render_api_key' // ID креда в Jenkins
+        RENDER_API_KEY = credentials('render_api_key')
     }
 
     stages {
@@ -42,46 +43,41 @@ pipeline {
             }
         }
 
+
         stage('Deploy to Render') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: RENDER_CRED_ID,
-                    usernameVariable: 'RENDER_USER',
-                    passwordVariable: 'RENDER_API_KEY'
-                )]) {
+            steps
+                {
                     script {
-                        echo "Пушим на Render сервис: ${RENDER_SERVICE_NAME}"
+                        echo "Пушим на Render: ${RENDER_SERVICE_NAME}"
 
                         bat """
                             @echo on
-                            cd /d render-deploy
-
-                            REM Удаляем старый remote, если он есть
-                            git remote remove origin || echo Origin not found
+                            cd /d \"render-deploy\"
 
                             REM Инициализируем Git
                             git init
                             git config --local user.email \"jenkins@example.com\"
                             git config --local user.name \"Jenkins\"
 
-                            REM Добавляем remote с токеном
-                            git remote add origin https://%RENDER_API_KEY%@git.render.com/${RENDER_SERVICE_NAME}.git
+                            REM Удаляем старый remote
+                            git remote remove origin || echo Origin not found
 
-                            REM Добавляем файлы и делаем commit
+                            REM Добавляем новый remote
+                           git remote add origin https://${RENDER_API_KEY.replace('/', '%2F')}@git.render.com/${RENDER_SERVICE_NAME}.git
+
+                            REM Добавляем файлы и делаем push
                             git add .
                             git commit -m \"Deploy .jar to Render\"
-
-                            REM Пушим на Render
                             git push origin HEAD:main --force
                         """
                     }
                 }
             }
-        }
 
         stage('Finish') {
             steps {
-                echo "✅ Приложение задеплоено по адресу: https://${RENDER_SERVICE_NAME}.onrender.com"
+                echo "✅ Приложение задеплоено на Render"
+                echo "Открой: https://${RENDER_SERVICE_NAME}.onrender.com"
             }
         }
     }
